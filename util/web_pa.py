@@ -1,10 +1,40 @@
-#!/usr/bin/python3
-import requests, random, logging, os
+'''
+Created May 23, 2019
+
+@author: Matt Healy
+'''
+import requests, logging, os
 import traceback
 import static.credentials as creds
 from static.static import device_types, device_dict
 
 class WebpaUtils:
+    '''
+    Common class for all product types
+
+    ...
+    Attributes
+    ----------
+    webpa_sat_key : str
+        Public key to obtain Service Access Token (SAT) for accessing Web 
+        Protocol Agent (Web PA)
+    webpa_sat_secret : str
+        Private key to obtain SAT for accessing Web PA
+    webpa_sat_url : str
+        Request URL to obtain Web PA SAT
+    webpa_base_url : str
+        Base URL to make requests to Web PA
+
+    Methods
+    -------
+    get_webpa_sat_token
+        Returns Service Access Token (SAT) for accessing Web PA
+    ip_from_mac
+        Returns device's IPv6 address from estbMAC address
+    router_is_online
+        Returns True if device is online else return False
+    
+    '''
 
     webpa_sat_key = creds.webpa_sat_key
     webpa_sat_secret = creds.webpa_sat_secret
@@ -12,7 +42,12 @@ class WebpaUtils:
     webpa_base_url = creds.webpa_base_url
 
     @classmethod
-    def get_webpa_sat_token(cls):
+    def get_webpa_sat_token(cls) -> str:
+        '''
+        Retrieve Service Access Token (SAT) for access to Web PA
+        
+        :return service_access_token: SAT for access to Web PA
+        '''
 
         try:
             headers = {
@@ -20,17 +55,22 @@ class WebpaUtils:
                 'X-Client-Id': cls.webpa_sat_key,
                 'X-Client-Secret': cls.webpa_sat_secret
             }
-
             sat_response = requests.get(cls.webpa_sat_url, headers=headers)
             service_access_token = sat_response.json()['serviceAccessToken']
-
             return service_access_token
         except:
             traceback.print_exc()
 
     @classmethod
-    def ip_from_mac(cls, mac: str, device_type: str):
+    def ip_from_mac(cls, mac: str, device_type: str) -> str:
+        '''
+        Return device's IPv6 address from estbMAC address
+        
+        :param mac: estbMAC of device
+        :param device_type: Device type (XB3, XB6, XF3, XI5, or XG)
 
+        :return ip_address: IPv6 Address of device
+        '''
         product_type = device_types[device_type]
         command = device_dict[product_type]["devices"][device_type]["command"]
 
@@ -47,12 +87,16 @@ class WebpaUtils:
             return ip_address
         except Exception as e:
             traceback.print_exc()
-
-        return False
-
+            return False
 
     @classmethod
-    def router_is_online(cls, mac: str):
+    def router_is_online(cls, mac: str) -> bool:
+        '''
+        Returns True if device is online else return False
+
+        :param mac: estbMAC of device
+        :return answer: True if device is online else False
+        '''
         command = "Device.DeviceInfo.UpTime"
         try:
             access_token = cls.get_webpa_sat_token()
@@ -85,17 +129,18 @@ class WebpaUtils:
 
     @classmethod
     def __stbit_rest_request(cls, url: str, output_path: str, mac: str, device_type: str) -> str:
-        """
+        '''
         Internal private function to handle the actual STBiT REST GET Request.
         STBiT has many quirks, which we handle. This attempts to get the file
         and output it in a directory which it returns on successful completion
 
-        :param str url: The URL on which to run the GET Request
-        :param str output_file_name: The string path where
+        :param url: The URL on which to run the GET Request
+        :param output_path: The string path where
+        :param mac: estbMAC of device
+        :params device_type: Device type (XB3, XB6, XF3, XI5, or XG)
         :return: The path to the output directory
-        :rtype: str
         :raises: Exception
-        """
+        '''
         error_message = ''
         output_file_name = ''
         try:
@@ -135,18 +180,14 @@ class WebpaUtils:
 
     @classmethod
     def get_live_logs_by_ip(cls, ip_addr: str, device_type: str) -> str:
-        """
+        '''
         Downloads the files specified by the parameters from the specified device IP
         using the STB Infra Tool and returns the extracted path for the same
-        :param str ip: The IP of the Gateway/XB Box for which to Download
-        :param str files_to_get: A glob supported path to download. Ex: /opt/logs/\*\*/receiver\*
-        :param str plant_id: The Plant ID on which you know MAC maybe present. Not necessary
-        :param str device_type: The Device Type for which to get the logs. Can be GW or XB3 (For all XB Devices)
+        
+        :param ip_addr: The IP of the Gateway/XB Box for which to Download
+        :param device_type: The Device Type for which to get the logs (XB3, XB6, XF3, XI5, or XG)
         :return: Returns a path string to downloaded strings
-        :rtype: str
-        :raises: None
-        """
-
+        '''
         device_type = device_type.upper()
         product_type = device_types[device_type]
         files_to_download = device_dict[product_type]["devices"][device_type]["logpath"]
@@ -208,18 +249,14 @@ class WebpaUtils:
 
     @classmethod
     def get_live_logs_by_mac(cls, estb_mac: str, device_type: str) -> str:
-        """
+        '''
         Downloads the files specified by the parameters from the specified device IP
         using the STB Infra Tool and returns the extracted path for the same
 
-        :param str ip: The IP of the Gateway/XB Box for which to Download
-        :param str files_to_get: A glob supported path to download. Ex: /opt/logs/\*\*/receiver\*
-        :param str plant_id: The Plant ID on which you know MAC maybe present. Not necessary
-        :param str device_type: The Device Type for which to get the logs. Can be CL
+        :param estb_mac: estbMAC for the Gateway/XB Box for which to Download
+        :param device_type: The Device Type for which to get the logs. Can be CL
         :return: Returns a path string to downloaded strings
-        :rtype: str
-        :raises: None
-        """
+        '''
         device_type = device_type.upper()
         product_type = device_types[device_type]
         files_to_download = device_dict[product_type]["devices"][device_type]["logpath"]
@@ -242,41 +279,13 @@ class WebpaUtils:
         return cls.__stbit_rest_request(url=baseURL + rest_url, output_path=output_path, mac=estb_mac, device_type=device_type)
 
     @staticmethod
-    def ecm_to_estb(ecm_mac: str):
+    def ecm_to_estb(ecm_mac: str) -> str:
+        '''
+        Convert ecmMAC to estbMAC by subtracting 2 (in hex) from ecmMAC
+
+        :return estb_mac: estbMAC calculated from ecmMAC
+        '''
         mac = ecm_mac.replace(":",'').upper().strip("'")
         mac = hex(int(mac, 16) - 2).lstrip('0x').rstrip('L').upper().zfill(12)
         estb_mac = ':'.join([mac[i:i+2] for i in range(0, len(mac), 2)])
         return estb_mac
-
-    def find_online_device(device_type: str) -> str:
-        """
-        Loop through some known MAC addresses (that we haev stored locally) of the 
-        given device type checking if that router is online. Once we have found one 
-        that is online, return that MAC address
-        """
-        found_one = False
-        with open(f'static/device_addresses/{device_type}.txt', 'r') as file:
-            macs = file.read().splitlines()
-            random.shuffle(macs)
-
-            while found_one == False:
-                mac = macs.pop()
-                found_one = WebpaUtils.router_is_online(mac)
-
-                print(f'{device_type} - {mac} : {found_one}')
-                if found_one: 
-
-                    return mac
-
-
-if __name__ == "__main__":
-    """
-    Purpose:
-        Loop through device types finding one that is online and printing the MAC
-        and IP addresses. Mostly for testing and debugging."""
-    for device_type in device_types.keys():
-        mac = find_online_device(device_type)
-        online = WebpaUtils.router_is_online(mac=mac)
-        print(f'Online: {online}')
-        ip = WebpaUtils.ip_from_mac(mac=mac, device_type=device_type)
-        print(f'ip: {ip}')

@@ -10,17 +10,17 @@ device_dict = {
 	"RDKB" : {
 		"email_subject": "Missing Mandatory Markers on RDK-B",
 		"recipient_list": ["matthew_healy@comcast.com",
-			# "arun_sunny@comcast.com",
-			# "vasavi_mahadev@comcast.com",
+			"arun_sunny@comcast.com",
+			"vasavi_mahadev@comcast.com",
 			],
 		"devices" : {
-			# "XF3" : {
-			# 	"splunk_query_macs": "search earliest=-1m index=rdk-json PX5001_3* prod comcast | stats count by mac | fields - count| head 35",
-			# 	"splunk_query_daily_percentages": 'search earliest=-15m index=rdk-json sourcetype=rdk-json (TG3482PC2 OR CGM4140COM) PROD_sey RDKB "WIFI_INFO_*" comcast |rex "(?<stage_time>WIFI_INFO_\\w+\\":\\"\\d+\\")" max_match=300|mvexpand stage_time |rename searchResult{}.Version as Verison|rex field=stage_time WIFI_INFO_(?P<stage>\\w+)\\":\\"(?<value>\\d+)\\" |eval MODEL=mvindex(split(Verison,"_"),0) | eval type = IF(MODEL LIKE "TG1682%","XB3",  IF(MODEL LIKE "DPC3941%","XB3",  IF(MODEL LIKE "DPC3939%","XB3",  IF(MODEL LIKE "TG3482PC2%","XB6", IF(MODEL LIKE "CGM4140COM%","XB6",IF(MODEL LIKE "CGA4131COM%","XB6",XF3)))))) | strcat "WIFI_INFO" "_" stage marker| stats dc(mac) as devices by marker type',
-			# 	"command" : "Device.DeviceInfo.X_COMCAST-COM_WAN_IPv6",
-			# 	"logpath" : "/tmp/DCMresponse.txt",
-			# 	"model" : "PX5001_3",
-			# },
+			"XF3" : {
+				"splunk_query_macs": "search earliest=-1m index=rdk-json PX5001_3* prod comcast | stats count by mac | fields - count| head 35",
+				"splunk_query_daily_percentages": 'search earliest=-15m index=rdk-json sourcetype=rdk-json (TG3482PC2 OR CGM4140COM) PROD_sey RDKB "WIFI_INFO_*" comcast |rex "(?<stage_time>WIFI_INFO_\\w+\\":\\"\\d+\\")" max_match=300|mvexpand stage_time |rename searchResult{}.Version as Verison|rex field=stage_time WIFI_INFO_(?P<stage>\\w+)\\":\\"(?<value>\\d+)\\" |eval MODEL=mvindex(split(Verison,"_"),0) | eval type = IF(MODEL LIKE "TG1682%","XB3",  IF(MODEL LIKE "DPC3941%","XB3",  IF(MODEL LIKE "DPC3939%","XB3",  IF(MODEL LIKE "TG3482PC2%","XB6", IF(MODEL LIKE "CGM4140COM%","XB6",IF(MODEL LIKE "CGA4131COM%","XB6",XF3)))))) | strcat "WIFI_INFO" "_" stage marker| stats dc(mac) as devices by marker type',
+				"command" : "Device.DeviceInfo.X_COMCAST-COM_WAN_IPv6",
+				"logpath" : "/tmp/DCMresponse.txt",
+				"model" : "PX5001_3",
+			},
 			"XB3" : {
 				"splunk_query_macs": "search earliest=-1m index=rdk-json TG1682_3* prod comcast | stats count by mac | fields - count| head 35",
 				"splunk_query_daily_percentages": 'search earliest=-15m index=rdk-json sourcetype=rdk-json (TG3482PC2 OR CGM4140COM) PROD_sey RDKB "WIFI_INFO_*" comcast |rex "(?<stage_time>WIFI_INFO_\\w+\\":\\"\\d+\\")" max_match=300|mvexpand stage_time |rename searchResult{}.Version as Verison|rex field=stage_time WIFI_INFO_(?P<stage>\\w+)\\":\\"(?<value>\\d+)\\" |eval MODEL=mvindex(split(Verison,"_"),0) | eval type = IF(MODEL LIKE "TG1682%","XB3",  IF(MODEL LIKE "DPC3941%","XB3",  IF(MODEL LIKE "DPC3939%","XB3",  IF(MODEL LIKE "TG3482PC2%","XB6", IF(MODEL LIKE "CGM4140COM%","XB6",IF(MODEL LIKE "CGA4131COM%","XB6",XF3)))))) | strcat "WIFI_INFO" "_" stage marker| stats dc(mac) as devices by marker type',
@@ -40,9 +40,9 @@ device_dict = {
 	"RDKV" : {
 		"email_subject": "Missing Mandatory Markers on RDK-V",
 		"recipient_list": ["matthew_healy@comcast.com",
-				# "Dileep_Ravindranathan@cable.comcast.com",
-				# "Nirmal_Unnikrishnan@cable.comcast.com",
-				# "vasavi_mahadev@comcast.com",
+				"Dileep_Ravindranathan@cable.comcast.com",
+				"Nirmal_Unnikrishnan@cable.comcast.com",
+				"vasavi_mahadev@comcast.com",
 				],
 		"devices" : {
 			"XI5" : {
