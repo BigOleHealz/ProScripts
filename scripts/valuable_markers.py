@@ -19,7 +19,8 @@ def run():
 	csv_dataframe = pd.DataFrame(columns=important_columns)
 	for device_type in ["Both", "XB3", "XB6", "Others"]:
 
-		df = pd.read_csv(f"static/ErrorMarkers_Percentages/RDKB/{device_type}.csv")[important_columns]
+		df = pd.read_csv(f"static/ErrorMarkers_Percentages/RDKB/{device_type}.csv")[
+			important_columns]
 		df["All_issues_percentage"] = df["All_issues_percentage"].apply(
 			lambda x: float(x.replace('%', '')))
 		df = df.groupby(by=["Device_type", "Marker", "Version"], as_index=False).sum()
@@ -38,7 +39,8 @@ def run():
 	csv_dataframe = pd.DataFrame(columns=important_columns)
 	for device_type in ["Both", "XG", "XI5", "Others"]:
 
-		df = pd.read_csv(f"static/ErrorMarkers_Percentages/RDKV/{device_type}.csv")[important_columns]
+		df = pd.read_csv(f"static/ErrorMarkers_Percentages/RDKV/{device_type}.csv")[
+		important_columns]
 		df["All_issues_percentage"] = df["All_issues_percentage"].apply(
 			lambda x: float(x.replace('%', '')))
 		df = df.sort_values(by=["Device_type", "Marker", "All_issues_percentage"],

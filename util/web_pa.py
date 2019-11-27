@@ -289,3 +289,4 @@ class WebpaUtils:
         mac = hex(int(mac, 16) - 2).lstrip('0x').rstrip('L').upper().zfill(12)
         estb_mac = ':'.join([mac[i:i+2] for i in range(0, len(mac), 2)])
         return estb_mac
+
