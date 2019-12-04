@@ -1,60 +1,49 @@
-import os, time, re, json
-from datetime import datetime as dt
+'''
+Created Nov 15, 2019
 
-def timeit(method):
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-        if 'log_time' in kw:
-            name = kw.get('log_name', method.__name__.upper())
-            kw['log_time'][name] = int((te - ts) * 1000)
-        else:
-            print('%r  %2.2f ms' % (method.__name__, (te - ts) * 1000))
-        return result
-    return timed
+@author: Matt Healy
 
-def find_pid_row(contents: list):
-	pattern = r'Process'
-	for i, row in enumerate(contents):
-		if re.search(pattern, row): return i
-	return False
+Purpose: From locally stored folder full of recently-pulled device logs, create
+	a dict with types {string : set} with kernal panic trace markers as the 
+	key and the [unique] set of MACs that exhibited that marker as the value. 
+	After the dictionary has been created, we cast the values to lists so that 
+	we can write the dict to a .txt file (sets are not compatible with JSON)
+'''
+import os, re, json
+from util.utility_functions import timer
 
-@timeit
+def find_pid_indexes(contents: str):
+	'''
+	Return start & end indices of all kernal panic traces in the content passed-in
+
+	:param contents: resetinfo.txt.0 file contents
+	:return indexes: list of tuples containing the indexes of the first & last
+		characters of the kernal panic trace
+	'''
+	pattern = r'CPU: [0-9] PID: ([0-9])* ([\S])*: ([\S])*'
+	indexes = [(m.start(0), m.end(0)) for m in re.finditer(pattern, contents)]
+	return indexes
+
+@timer
 def run():
 	output_folder = f'{os.getcwd()}/output_folder/kernal_panic/logs'
 	output_file = f'{os.getcwd()}/output_folder/kernal_panic/traces.txt'
 	open(output_file, 'w').close()
 
+	trace_dict = {}
 	for filename in os.listdir(output_folder):
-		
-		with open(f'{output_folder}/{filename}', 'r') as f:
-			content_lines = f.readlines()
+		mac = filename.split('.')[0]
+		with open(f'{output_folder}/{filename}', 'r') as f: content = f.read()
 
-		idx_pid = find_pid_row(content_lines)
-		if idx_pid:
-			with open(output_file, 'a') as file:
-				ipv6 = filename.split('_')[0]
-				trace = content_lines[idx_pid].strip('\n')
-				file.write(f'{trace}-{ipv6}\n')
+		for (start, end) in find_pid_indexes(content):
+			trace = content[start:end].split()[-1]
+			macs = trace_dict.get(trace, None)
+			if macs: trace_dict[trace].add(mac)
+			else: trace_dict[trace] = {mac}
 
-	with open(output_file, 'r') as file: lines = file.readlines()
-	content = ''.join(sorted(lines))
-	with open(output_file, 'w') as file: file.write(content)
-	with open(output_file, 'r') as file: content = [line.strip('\n') for line \
-		in file.readlines()]
-
-	data = {}
-	for trace in content:
-		process = trace.split()[1]
-		macs = data.get(process, None)
-		mac = trace.split('-')[-1].split('.')[0]
-
-		if macs: data[process].append(mac)
-		else: data[process] = [mac]
-
+	trace_dict = {key : list(trace_dict[key]) for key in trace_dict.keys()}
 	with open(f'{os.getcwd()}/output_folder/kernal_panic/counts.txt', 'w') as file:
-		file.write(json.dumps(data, indent=4, sort_keys=True))
-
+		file.write(json.dumps(trace_dict, indent=4, sort_keys=True))
+	
 if __name__ == "__main__":
 	run()

@@ -1,4 +1,18 @@
 #!/usr/bin/python3
+'''
+Created May 5, 2019
+
+@author: Matt Healy
+
+Purpose: For each device type in (XB3, XB6, XF3, XI5, and XG), SSH into live 
+	(field) device and pull its current configs. Then pull most up-to-date
+	configs from Confluence and compare them, finding markers that are present
+	in Confluence configs but missing from device. With the lists, generate an
+	HTML-formatted email listing markers that need to be updated for both Product
+	types. If one of the lists has __len__ > 0, send the email to the respective
+	email recipients list. If no outdated markers were detected, email the empty
+	list to myself and my partner so that we know the script was executed.
+'''
 import os, logging
 import static.credentials as creds
 from util.EmailSender import send_simple_message
@@ -30,7 +44,8 @@ def run():
 
 			if device_type == "XI5":
 				mac = device.find_online_device()
-				file_path = web_pa.get_live_logs_by_mac(estb_mac=mac, device_type=device_type)
+				file_path = web_pa.get_live_logs_by_mac(estb_mac=mac,
+					device_type=device_type)
 
 			elif device_type in ["XB3", "XB6", "XF3", "XG"]:
 				ip = device.find_online_device()
@@ -64,7 +79,8 @@ def run():
 
 			send_simple_message(
 				sender=device.get_email_sender(),
-				recipient=["matthew_healy@comcast.com", "vasavi_mahadev@comcast.com"],
+				recipient=["matthew_healy@comcast.com",
+					"vasavi_mahadev@comcast.com"],
 				subject=device.get_email_subject(),
 				message=BODY)
 
