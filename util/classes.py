@@ -10,6 +10,7 @@ import splunklib.results as results, splunklib.client as client
 from static.credentials import splunk_creds as creds
 from util.web_pa import WebpaUtils as web_pa
 from util.splunk import query_splunk
+from util.confluence import EditConfluence
 
 class Product(object):
 	'''
@@ -241,7 +242,9 @@ class Device(Product):
 
 		:return: df of [ideally] updated markers from Confluence
 		'''
-		return pd.read_csv(f"{os.getcwd()}/static/confluence_markers/{self.get_device_type()}.csv")
+		conf = EditConfluence()
+		page_id = conf.get_page_id(self.get_device_type())
+		return conf.get_page_contents(page_id)
 
 	def get_configs_difference(self) -> np.ndarray:
 		'''

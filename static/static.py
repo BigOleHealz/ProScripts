@@ -21,10 +21,12 @@ device_dict = {
 				"command" : "Device.DeviceInfo.X_COMCAST-COM_WAN_IPv6",
 				"logpath" : "/tmp/DCMresponse.txt",
 				"model" : "PX5001_3",
+				"confluence_page_id" : 588864951,
 				"confluence_vs_portal_email_list" : ["Matthew_HEALY@comcast.com", 
 													# "vasavi_mahadev@comcast.com", 
 													# "Prasob_Kizhedath2@cable.comcast.com"
 													],
+
 			},
 			"XB3" : {
 				"splunk_query_macs": "search earliest=-1m index=rdk-json TG1682_3* prod comcast | stats count by mac | fields - count| head 35",
@@ -32,6 +34,7 @@ device_dict = {
 				"command" : "Device.X_CISCO_COM_CableModem.IPv6Address",
 				"logpath" : "/tmp/DCMresponse.txt",
 				"model" : "TG1682_3",
+				"confluence_page_id" : 111991581,
 				"confluence_vs_portal_email_list" : ["Matthew_HEALY@comcast.com", 
 													"vasavi_mahadev@comcast.com", 
 													"arun_sunny@comcast.com"],
@@ -42,6 +45,7 @@ device_dict = {
 				"command" : "Device.X_CISCO_COM_CableModem.IPv6Address",
 				"logpath" : "/tmp/DCMSettings.conf",
 				"model" : "TG3482PC2_3",
+				"confluence_page_id" : 152733303,
 				"confluence_vs_portal_email_list" : ["Matthew_HEALY@comcast.com",
 													# "vasavi_mahadev@comcast.com", 
 													# "sridharguptha_guntha@comcast.com"
@@ -63,6 +67,7 @@ device_dict = {
 				"command" : "Device.DeviceInfo.X_COMCAST-COM_STB_IP",
 				"logpath" : "/tmp/DCMSettings.conf",
 				"model" : "PX051AEI_3",
+				"confluence_page_id" : 536722578,
 				"confluence_vs_portal_email_list" : ["Matthew_HEALY@comcast.com",
 													# "vasavi_mahadev@comcast.com", 
 													# "dileep_ravindranathan@cable.comcast.com"
@@ -74,6 +79,7 @@ device_dict = {
 				"command" : "Device.DeviceInfo.X_COMCAST-COM_STB_IP",
 				"logpath" : "/tmp/DCMSettings.conf",
 				"model" : "MX011AN_3",
+				"confluence_page_id" : 110497816,
 				"confluence_vs_portal_email_list" : ["Matthew_HEALY@comcast.com",
 													# "vasavi_mahadev@comcast.com",
 													# "dileep_ravindranathan@cable.comcast.com"
