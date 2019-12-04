@@ -11,8 +11,9 @@ def write_to_file(dict_list):
 		file.write('\n'.join(estb_macs))
 
 def run():
-	result = query_splunk('''earliest=-180m index=rdk-json CGM4140COM_3.7p15s1_*
+	result = query_splunk('''CGM4140COM_3.7p15s1_*
 		SYS_ERROR_KernelPanic_reboot | stats count by mac''',
-		kwargs_oneshot={'count' : 10000})
-
+		kwargs_oneshot={'count' : 10000, 
+						'earliest_time' : '-60m',
+						'index' : 'rdk-json'})
 	write_to_file(result)
