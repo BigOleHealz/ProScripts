@@ -141,20 +141,17 @@ class WebpaUtils:
         :return: The path to the output directory
         :raises: Exception
         '''
-        error_message = ''
-        output_file_name = ''
         try:
             logging.info(f"In rest request url: {url}")
 
             resp = requests.get(url, timeout=3000)
 
             if 'errorDetails' in resp.text:
-                error_message = "Box could be offline"
                 logging.info(" [STB LIVE LOGS] Box could be offline")
 
             else:
-                filename = os.path.join(output_path, resp.headers['Content-Disposition'].split('=')[-1].strip(
-                    '"').replace(':', ''))
+                filename = os.path.join(output_path, resp.headers[
+                    'Content-Disposition'].split('=')[-1].strip('"').replace(':', ''))
                 logging.info("filename: ", filename)
 
                 file_descriptor = open(filename, 'wb')
@@ -168,13 +165,10 @@ class WebpaUtils:
                 logging.info(f" [STB LOGS] output path : {output_path}")
         except requests.exceptions.Timeout as errt:
             logging.exception(" [STB LOGS] STB Timeout Error: : ", exc_info=True)
-            error_message=  "STB request timeout"
         except requests.exceptions.ConnectionError as conn:
             logging.exception(" [STB LOGS] STB Connection Timeout Error: : ", exc_info=True)
-            error_message=  "STB Connection error"
         except Exception as e:
             logging.exception("[STB LOGS] STB Error: : ", exc_info=True)
-            error_message =  "error"
 
         return output_path
 
@@ -276,7 +270,8 @@ class WebpaUtils:
         if not os.path.exists(output_path):
             os.makedirs(output_path)
 
-        return cls.__stbit_rest_request(url=baseURL + rest_url, output_path=output_path, mac=estb_mac, device_type=device_type)
+        return cls.__stbit_rest_request(url=baseURL + rest_url, mac=estb_mac, 
+            output_path=output_path, device_type=device_type)
 
     @staticmethod
     def ecm_to_estb(ecm_mac: str) -> str:
@@ -289,4 +284,6 @@ class WebpaUtils:
         mac = hex(int(mac, 16) - 2).lstrip('0x').rstrip('L').upper().zfill(12)
         estb_mac = ':'.join([mac[i:i+2] for i in range(0, len(mac), 2)])
         return estb_mac
+
+
 
